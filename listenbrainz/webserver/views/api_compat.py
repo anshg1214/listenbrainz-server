@@ -1,5 +1,8 @@
 import json
 import re
+
+import sentry_sdk
+
 import listenbrainz.db.user as db_user
 from collections import defaultdict
 from yattag import Doc
@@ -279,6 +282,7 @@ def record_listens(request, data):
     except ListenValidationError as err:
         # Unsure about which LastFMError code to use but 5 or 6 probably make the most sense.
         # see listenbrainz.webserver.errors.py for a detailed list of all available codes
+        sentry_sdk.capture_exception(err)
         raise InvalidAPIUsage(LastFMError(code=6, message=err.message), 400, output_format)
 
     user_metadata = SubmitListenUserMetadata(user_id=user['id'], musicbrainz_id=user['musicbrainz_id'])
