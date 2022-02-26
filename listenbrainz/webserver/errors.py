@@ -137,7 +137,8 @@ def init_error_handlers(app):
                 A Response which will be a json error if request was made to the LB api and an html page
                 otherwise
         """
-        if current_app.config.get('IS_API_COMPAT_APP') or request.path.startswith(API_PREFIX):
+        if current_app.config.get('IS_API_COMPAT_APP') or request.path.startswith(API_PREFIX) \
+                or request.path.startswith('2.0'):
             response = jsonify({'code': code, 'error': error.description})
             response.headers["Access-Control-Allow-Origin"] = "*"
             return response, code
