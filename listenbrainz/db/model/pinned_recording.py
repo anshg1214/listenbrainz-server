@@ -39,13 +39,8 @@ class PinnedRecording(MsidMbidModel):
 
     @model_validator(mode="after")
     def check_pin_until_greater_than_created(self):
-        try:
-            if self.pinned_until <= self.created:
-                raise ValueError(
-                    "Pinned_until of returned PinnedRecording must be greater than created."
-                )
-        except (ValueError, AttributeError) as e:
-            raise ValueError(str(e))
+        if self.pinned_until <= self.created:
+            raise ValueError("Pinned_until of returned PinnedRecording must be greater than created.")
         return self
 
     def to_api(self):
@@ -72,7 +67,7 @@ class WritablePinnedRecording(PinnedRecording):
 
     """
 
-    row_id: int = Field(default=None, ge=0)
+    row_id: Optional[int] = Field(default=None, ge=0)
     created: Optional[datetime] = None
     pinned_until: Optional[datetime] = None
 
