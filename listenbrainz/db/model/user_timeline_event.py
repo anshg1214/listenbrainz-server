@@ -16,11 +16,13 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 
-from pydantic.v1 import BaseModel, NonNegativeInt, constr, conlist
+from pydantic.v1 import BaseModel, NonNegativeInt, constr
 
 from datetime import datetime
 from enum import StrEnum
-from typing import Union, Optional, List
+from typing import Annotated, Union, Optional, List
+
+from pydantic import Field
 
 from data.model.listen import APIListen, TrackMetadata
 from listenbrainz.db.model.review import CBReviewTimelineMetadata
@@ -46,13 +48,13 @@ class RecordingRecommendationMetadata(MsidMbidModel):
 # delete their account in future, causing the list to become empty. use different models for
 # reading and writing to avoid errors.
 class WritePersonalRecordingRecommendationMetadata(MsidMbidModel):
-    users: conlist(str, min_items=1)
-    blurb_content: Optional[str]
+    users: Annotated[list[str], Field(min_length=1)]
+    blurb_content: Optional[str] = None
 
 
 class PersonalRecordingRecommendationMetadata(MsidMbidModel):
     users: list[str]
-    blurb_content: Optional[str]
+    blurb_content: Optional[str] = None
 
 
 class NotificationMetadata(BaseModel):
