@@ -13,13 +13,13 @@ from listenbrainz.db.testing import TimescaleTestCase
 class MappingTestCase(TimescaleTestCase):
 
     def test_msid_mbid_model(self):
-        with self.assertRaises(ValidationError):
+        with self.assertRaisesRegex(ValidationError, 'at least one of recording_msid or recording_mbid should be specified'):
             model = MsidMbidModel(recording_mbid=None, recording_msid=None)
 
-        with self.assertRaises(ValidationError):
+        with self.assertRaisesRegex(ValidationError, "must be a valid UUID"):
             model = MsidMbidModel(recording_msid='', recording_mbid=str(uuid.uuid4()))
 
-        with self.assertRaises(ValidationError):
+        with self.assertRaisesRegex(ValidationError, "must be a valid UUID"):
             model = MsidMbidModel(recording_msid=str(uuid.uuid4()), recording_mbid='')
 
         # test that 2 valid uuids doesn't raise error
