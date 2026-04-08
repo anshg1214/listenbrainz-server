@@ -16,13 +16,11 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 
-from pydantic.v1 import BaseModel, NonNegativeInt, constr
-
 from datetime import datetime
 from enum import StrEnum
 from typing import Annotated, Union, Optional, List
 
-from pydantic import Field
+from pydantic import BaseModel, Field
 
 from data.model.listen import APIListen, TrackMetadata
 from listenbrainz.db.model.review import CBReviewTimelineMetadata
@@ -58,23 +56,23 @@ class PersonalRecordingRecommendationMetadata(MsidMbidModel):
 
 
 class NotificationMetadata(BaseModel):
-    creator: constr(min_length=1)
-    message: constr(min_length=1)
+    creator: Annotated[str, Field(min_length=1)]
+    message: Annotated[str, Field(min_length=1)]
 
 
 class ThanksMetadata(BaseModel):
     original_event_type: UserTimelineEventType
-    original_event_id: NonNegativeInt
+    original_event_id: int = Field(ge=0)
     blurb_content: Optional[str]
 
 class ThanksEventMetadata(BaseModel):
     original_event_type: UserTimelineEventType
-    original_event_id: NonNegativeInt
+    original_event_id: int = Field(ge=0)
     blurb_content: Optional[str]
-    thanker_id: NonNegativeInt
-    thanker_username: constr(min_length=1)
-    thankee_id: NonNegativeInt
-    thankee_username: constr(min_length=1)
+    thanker_id: int = Field(ge=0)
+    thanker_username: Annotated[str, Field(min_length=1)]
+    thankee_id: int = Field(ge=0)
+    thankee_username: Annotated[str, Field(min_length=1)]
 
 
 UserTimelineEventMetadata = Union[CBReviewTimelineMetadata, PersonalRecordingRecommendationMetadata,
@@ -82,8 +80,8 @@ UserTimelineEventMetadata = Union[CBReviewTimelineMetadata, PersonalRecordingRec
 
 
 class UserTimelineEvent(BaseModel):
-    id: NonNegativeInt
-    user_id: NonNegativeInt
+    id: int = Field(ge=0)
+    user_id: int = Field(ge=0)
     metadata: UserTimelineEventMetadata
     event_type: UserTimelineEventType
     created: Optional[datetime]
@@ -91,14 +89,14 @@ class UserTimelineEvent(BaseModel):
 
 
 class APINotificationEvent(BaseModel):
-    message: constr(min_length=1)
+    message: Annotated[str, Field(min_length=1)]
 
 
 class APIFollowEvent(BaseModel):
-    user_name_0: constr(min_length=1)
-    user_name_1: constr(min_length=1)
-    relationship_type: constr(min_length=1)
-    created: NonNegativeInt
+    user_name_0: Annotated[str, Field(min_length=1)]
+    user_name_1: Annotated[str, Field(min_length=1)]
+    relationship_type: Annotated[str, Field(min_length=1)]
+    created: int = Field(ge=0)
 
 
 class APIPinEvent(APIListen):
@@ -121,14 +119,14 @@ class APIPersonalRecommendationEvent(BaseModel):
     track_metadata: TrackMetadata
 
 class APIThanksEvent(BaseModel):
-    created: NonNegativeInt
+    created: int = Field(ge=0)
     blurb_content: Optional[str]
-    original_event_id: NonNegativeInt
+    original_event_id: int = Field(ge=0)
     original_event_type: str
-    thanker_id: NonNegativeInt
-    thanker_username: constr(min_length=1)
-    thankee_id: NonNegativeInt
-    thankee_username: constr(min_length=1)
+    thanker_id: int = Field(ge=0)
+    thanker_username: Annotated[str, Field(min_length=1)]
+    thankee_id: int = Field(ge=0)
+    thankee_username: Annotated[str, Field(min_length=1)]
 
 
 APIEventMetadata = Union[APIPersonalRecommendationEvent, APIListen, APIFollowEvent, APINotificationEvent, APIPinEvent, APICBReviewEvent, APIThanksEvent]
@@ -137,8 +135,8 @@ APIEventMetadata = Union[APIPersonalRecommendationEvent, APIListen, APIFollowEve
 class APITimelineEvent(BaseModel):
     id: Optional[int]
     event_type: UserTimelineEventType
-    user_name: constr(min_length=1)
-    created: NonNegativeInt
+    user_name: Annotated[str, Field(min_length=1)]
+    created: int = Field(ge=0)
     metadata: APIEventMetadata
     hidden: bool
 
@@ -146,8 +144,8 @@ class SimilarUserTimelineEvent(APITimelineEvent):
     similarity: float | None = None
 
 class HiddenUserTimelineEvent(BaseModel):
-    id: NonNegativeInt
-    user_id: NonNegativeInt
+    id: int = Field(ge=0)
+    user_id: int = Field(ge=0)
     event_type: UserTimelineEventType
-    event_id: NonNegativeInt
+    event_id: int = Field(ge=0)
     created: datetime
